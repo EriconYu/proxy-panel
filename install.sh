@@ -10,6 +10,8 @@ require_root
 ENV_FILE="${1:-$PROJECT_ROOT/env.conf}"
 load_env "$ENV_FILE"
 validate_config
+env_permissions="$(stat -c '%a' "$ENV_FILE")"
+(( (8#$env_permissions & 077) == 0 )) || die "$ENV_FILE must not be readable or writable by group/others (use chmod 600)"
 
 [[ -r /etc/os-release ]] || die "cannot identify this operating system"
 # shellcheck disable=SC1091

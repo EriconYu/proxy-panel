@@ -19,13 +19,16 @@
 先將網域直接解析至伺服器，再執行：
 
 ```bash
+sudo apt-get update && sudo apt-get install -y git make
 git clone https://github.com/EriconYu/proxy-panel.git
 cd proxy-panel
-cp env.conf.example env.conf
-chmod 600 env.conf
+make configure
 $EDITOR env.conf
-sudo ./install.sh
+make validate
+make install
 ```
+
+`make` 只是便捷入口。伺服器沒有 Make 時，等價指令仍是 `cp env.conf.example env.conf`、`chmod 600 env.conf`、編輯該檔案，然後執行 `sudo ./install.sh`。
 
 `env.conf` 已被 Git 忽略。儲存庫範例刻意保留首次登入帳號 `admin / 111111`；這是公開密碼，登入後必須立即修改。只有從管理頁成功修改密碼後，初始密碼警告才會消失。
 
@@ -48,12 +51,15 @@ sudo ./install.sh
 ## 日常維運
 
 ```bash
-sudo scripts/status.sh
-sudo scripts/backup.sh
-sudo scripts/restore.sh /var/backups/proxy-panel/proxy-panel-TIMESTAMP.tar.gz
-git pull --ff-only && sudo scripts/update.sh
-sudo scripts/uninstall.sh
+make help
+make status
+make backup
+make restore BACKUP=/var/backups/proxy-panel/proxy-panel-TIMESTAMP.tar.gz
+make update
+make uninstall
 ```
+
+`make deploy` 是 `make install` 的別名。部署設定不在儲存庫目錄時可傳入 `ENV=/path/to/env.conf`。Make 指令呼叫的仍是同一組已審閱腳本，也繼續支援直接執行腳本。
 
 更新前會自動備份，再替換應用程式與服務檔案；不會暗中升級 Xray 或變更部署參數。解除安裝預設先備份，並保留套件、備份、TLS 憑證及所有無關的 Nginx 設定。
 
@@ -89,9 +95,10 @@ ClashMi 透過訂閱及代理協定連線時，不會提供可信的手機型號
 ## 開發檢查
 
 ```bash
-python3 -m unittest discover -s tests -v
-bash tests/public_audit.sh
-bash -n install.sh scripts/*.sh
+make test
+make lint
+make audit
+# 或一次執行：make check
 ```
 
 應用程式只使用 Python 標準函式庫；執行時透過系統 `qrencode` 指令產生 QR Code。專案採用 MIT 授權。

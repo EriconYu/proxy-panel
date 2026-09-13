@@ -19,13 +19,16 @@ The installer targets Ubuntu 22.04/24.04 on AMD64 or ARM64. Only ports 80 and 44
 Point a domain directly at the server first, then run:
 
 ```bash
+sudo apt-get update && sudo apt-get install -y git make
 git clone https://github.com/EriconYu/proxy-panel.git
 cd proxy-panel
-cp env.conf.example env.conf
-chmod 600 env.conf
+make configure
 $EDITOR env.conf
-sudo ./install.sh
+make validate
+make install
 ```
+
+`make` is only a convenience layer. On a host where it is unavailable, the equivalent direct commands remain `cp env.conf.example env.conf`, `chmod 600 env.conf`, edit the file, then run `sudo ./install.sh`.
 
 `env.conf` is ignored by Git. The tracked example intentionally uses the first-login credentials `admin / 111111`. These are public and must be changed immediately in the panel. The warning remains visible until the password is changed through the panel.
 
@@ -48,12 +51,15 @@ For `TLS_MODE=certbot`, the domain must resolve to this server and inbound TCP 8
 ## Operate
 
 ```bash
-sudo scripts/status.sh
-sudo scripts/backup.sh
-sudo scripts/restore.sh /var/backups/proxy-panel/proxy-panel-TIMESTAMP.tar.gz
-git pull --ff-only && sudo scripts/update.sh
-sudo scripts/uninstall.sh
+make help
+make status
+make backup
+make restore BACKUP=/var/backups/proxy-panel/proxy-panel-TIMESTAMP.tar.gz
+make update
+make uninstall
 ```
+
+`make deploy` is an alias for `make install`. Set `ENV=/path/to/env.conf` when the deployment configuration is elsewhere. The Make targets call the same reviewed scripts; direct script execution remains supported.
 
 Updates back up state before replacing application and service files. They do not silently change Xray or deployment settings. Uninstall creates a backup by default and retains packages, backups, certificates, and any unrelated Nginx configuration.
 
@@ -89,9 +95,10 @@ See [SECURITY.md](SECURITY.md) for vulnerability reporting and the complete trus
 ## Development
 
 ```bash
-python3 -m unittest discover -s tests -v
-bash tests/public_audit.sh
-bash -n install.sh scripts/*.sh
+make test
+make lint
+make audit
+# or: make check
 ```
 
 The application uses only the Python standard library. Runtime QR rendering uses the system `qrencode` command.

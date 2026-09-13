@@ -23,13 +23,12 @@ jobs:
       - name: Install shellcheck
         run: sudo apt-get update && sudo apt-get install -y shellcheck
       - name: Python tests
-        run: python3 -m unittest discover -s tests -v
+        run: make test
       - name: Python syntax
-        run: python3 -m py_compile app/app.py app/apply_config.py
+        run: python3 -m py_compile app/app.py app/apply_config.py scripts/restore_archive.py
       - name: Shell syntax and lint
         run: |
-          bash -n install.sh scripts/*.sh tests/*.sh
-          shellcheck -x install.sh scripts/*.sh tests/*.sh
-          bash tests/test_env.sh
+          make help
+          make lint
       - name: Public repository audit
         run: bash tests/public_audit.sh

@@ -19,13 +19,16 @@
 先把域名直接解析到服务器，再执行：
 
 ```bash
+sudo apt-get update && sudo apt-get install -y git make
 git clone https://github.com/EriconYu/proxy-panel.git
 cd proxy-panel
-cp env.conf.example env.conf
-chmod 600 env.conf
+make configure
 $EDITOR env.conf
-sudo ./install.sh
+make validate
+make install
 ```
+
+`make` 只是便捷入口。服务器没有 Make 时，等价命令仍然是 `cp env.conf.example env.conf`、`chmod 600 env.conf`、编辑该文件，然后执行 `sudo ./install.sh`。
 
 `env.conf` 已被 Git 忽略。仓库中的示例特意保留首次登录账号 `admin / 111111`；这是公开密码，登录后必须立即修改。只有从管理页成功修改密码后，初始密码警告才会消失。
 
@@ -48,12 +51,15 @@ sudo ./install.sh
 ## 日常运维
 
 ```bash
-sudo scripts/status.sh
-sudo scripts/backup.sh
-sudo scripts/restore.sh /var/backups/proxy-panel/proxy-panel-TIMESTAMP.tar.gz
-git pull --ff-only && sudo scripts/update.sh
-sudo scripts/uninstall.sh
+make help
+make status
+make backup
+make restore BACKUP=/var/backups/proxy-panel/proxy-panel-TIMESTAMP.tar.gz
+make update
+make uninstall
 ```
+
+`make deploy` 是 `make install` 的别名。部署配置不在仓库目录时可传入 `ENV=/path/to/env.conf`。Make 命令调用的仍是同一组已审阅脚本，也继续支持直接执行脚本。
 
 更新前会自动备份，再替换应用和服务文件；不会暗中升级 Xray 或改变部署参数。卸载默认先备份，并保留软件包、备份、TLS 证书以及所有无关的 Nginx 配置。
 
@@ -89,9 +95,10 @@ ClashMi 通过订阅和代理协议连接时，不会提供可信的手机型号
 ## 开发检查
 
 ```bash
-python3 -m unittest discover -s tests -v
-bash tests/public_audit.sh
-bash -n install.sh scripts/*.sh
+make test
+make lint
+make audit
+# 或一次执行：make check
 ```
 
 应用只使用 Python 标准库；运行时通过系统 `qrencode` 命令生成二维码。项目采用 MIT 许可证。
