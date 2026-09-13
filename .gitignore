@@ -1,0 +1,7 @@
+env.conf
+*.local
+*.log
+*.tar.gz
+__pycache__/
+.pytest_cache/
+.DS_Store

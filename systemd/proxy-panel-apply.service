@@ -1,0 +1,9 @@
+[Unit]
+Description=Apply validated Proxy Panel runtime configuration
+After=network-online.target
+
+[Service]
+Type=oneshot
+EnvironmentFile=/etc/proxy-panel/runtime.env
+ExecStart=/opt/proxy-panel/app/apply_config.py
+TimeoutStartSec=45

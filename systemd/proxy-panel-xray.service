@@ -1,0 +1,21 @@
+[Unit]
+Description=Proxy Panel Xray core
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=proxy-panel-xray
+Group=proxy-panel-xray
+ExecStart=/opt/proxy-panel/bin/xray run -config /etc/proxy-panel/xray.json
+Restart=on-failure
+RestartSec=3s
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ProtectKernelTunables=true
+ProtectControlGroups=true
+
+[Install]
+WantedBy=multi-user.target

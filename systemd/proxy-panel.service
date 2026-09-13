@@ -1,0 +1,20 @@
+[Unit]
+Description=Proxy Panel web application
+After=network-online.target proxy-panel-xray.service proxy-panel-shaping.service
+Wants=network-online.target proxy-panel-xray.service proxy-panel-shaping.service
+
+[Service]
+Type=simple
+User=proxy-panel
+Group=proxy-panel
+EnvironmentFile=/etc/proxy-panel/runtime.env
+ExecStart=/usr/bin/python3 /opt/proxy-panel/app/app.py
+Restart=on-failure
+RestartSec=3s
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ReadWritePaths=/opt/proxy-panel/data
+
+[Install]
+WantedBy=multi-user.target

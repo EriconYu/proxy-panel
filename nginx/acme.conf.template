@@ -1,0 +1,14 @@
+server {
+    listen 80;
+    listen [::]:80;
+    server_name __DOMAIN__;
+    access_log off;
+
+    location ^~ /.well-known/acme-challenge/ {
+        root /var/lib/proxy-panel-acme;
+    }
+
+    location / {
+        return 404;
+    }
+}

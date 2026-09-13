@@ -1,0 +1,12 @@
+minVersion = "8.30.0"
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Published SHA-256 checksums for the pinned Xray release archives"
+regexTarget = "secret"
+regexes = [
+  '''23cd9af937744d97776ee35ecad4972cf4b2109d1e0fe6be9930467608f7c8ae''',
+  '''4d30283ae614e3057f730f67cd088a42be6fdf91f8639d82cb69e48cde80413c''',
+]

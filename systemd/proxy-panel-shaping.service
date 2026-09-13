@@ -1,0 +1,13 @@
+[Unit]
+Description=Restore Proxy Panel device rate limits
+After=network.target
+Before=proxy-panel.service
+
+[Service]
+Type=oneshot
+EnvironmentFile=/etc/proxy-panel/runtime.env
+ExecStart=/opt/proxy-panel/app/apply_config.py --shaping-only
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
